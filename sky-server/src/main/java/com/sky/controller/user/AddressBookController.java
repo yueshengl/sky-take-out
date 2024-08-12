@@ -1,5 +1,6 @@
 package com.sky.controller.user;
 
+import com.sky.constant.MessageConstant;
 import com.sky.context.BaseContext;
 import com.sky.entity.AddressBook;
 import com.sky.result.Result;
@@ -71,7 +72,7 @@ public class AddressBookController {
         if(list!=null&&list.size()>0){
             return Result.success(list.get(0));
         }
-        return Result.error("没有查询到默认地址地址");
+        return Result.error(MessageConstant.NOT_FOUND_DEFAULT_ADDRESS);
     }
 
     /**
