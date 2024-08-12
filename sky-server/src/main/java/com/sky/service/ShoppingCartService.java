@@ -30,4 +30,10 @@ public interface ShoppingCartService {
      */
     void cleanShoppingCart();
 
+    /**
+     * 购物车-减
+     * @param shoppingCartDTO
+     */
+    void subShoppingCart(ShoppingCartDTO shoppingCartDTO);
+
 }
