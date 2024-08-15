@@ -21,6 +21,7 @@ import com.sky.vo.OrderPaymentVO;
 import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrderVO;
+import com.sky.websocket.WebSocketServer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,6 +72,9 @@ public class OrderServiceImpl implements OrderService {
     @Value("${sky.baidu.ak}")
     private String ak;
     public static String orderNumber;//用一个全局变量存储订单号
+
+    @Autowired
+    private WebSocketServer webSocketServer;
 
     /**
      * 用户下单
@@ -165,6 +169,16 @@ public class OrderServiceImpl implements OrderService {
         Integer OrderStatus = Orders.TO_BE_CONFIRMED; // 订单状态，待接单
         LocalDateTime check_out_time = LocalDateTime.now();//结账时间
         orderMapper.updateStatus(OrderStatus, OrderPaidStatus, check_out_time, orderNumber);
+
+        // 通过WebSocket向客户端推送消息(type orderId content)
+        Orders orders = orderMapper.getByNumber(orderNumber);
+        Map map = new HashMap();
+        map.put("type",1);
+        map.put("orderId",orders.getId());
+        map.put("content","订单号:"+orderNumber);
+
+        String json  = JSON.toJSONString(map);
+        webSocketServer.sendToAllClient(json);
         return vo;
 
     }
