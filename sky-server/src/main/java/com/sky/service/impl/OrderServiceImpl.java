@@ -170,7 +170,7 @@ public class OrderServiceImpl implements OrderService {
         LocalDateTime check_out_time = LocalDateTime.now();//结账时间
         orderMapper.updateStatus(OrderStatus, OrderPaidStatus, check_out_time, orderNumber);
 
-        // 通过WebSocket向客户端推送消息(type orderId content)
+        // 通过WebSocket向客户端推送消息(type orderId content)来单提醒
         Orders orders = orderMapper.getByNumber(orderNumber);
         Map map = new HashMap();
         map.put("type",1);
@@ -379,7 +379,16 @@ public class OrderServiceImpl implements OrderService {
      */
     @Override
     public void reminder(Long id) {
-
+        Orders ordersDB = orderMapper.getById(id);
+        //校验订单是否存在
+        if(ordersDB == null){
+            throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
+        }
+        Map map = new HashMap();
+        map.put("type",2);
+        map.put("orderId",id);
+        map.put("content","订单号:"+ordersDB.getNumber());
+        webSocketServer.sendToAllClient(JSON.toJSONString(map));
     }
 
     /**
