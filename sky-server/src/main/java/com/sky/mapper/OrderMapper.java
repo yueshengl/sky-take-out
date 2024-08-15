@@ -91,4 +91,11 @@ public interface OrderMapper {
      * @return
      */
     Double sumByMap(Map map);
+
+    /**
+     * 订单统计
+     * @param map
+     * @return
+     */
+    Integer countByMap(Map map);
 }
